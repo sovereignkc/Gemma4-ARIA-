@@ -1,0 +1,76 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* { box-sizing: border-box; }
+
+html, body, #root {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  font-family: 'Inter', system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  background: #000;
+  color: #e8eaed;
+}
+
+/* Thin scrollbar */
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #2d2d2d; border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: #5f6368; }
+
+/* ── Marked.js rendered markdown ───────────────────────────────────────────── */
+.aria-prose { line-height: 1.7; color: #e8eaed; }
+.aria-prose p { margin: 0.4em 0; }
+.aria-prose p:first-child { margin-top: 0; }
+.aria-prose p:last-child  { margin-bottom: 0; }
+.aria-prose h1,.aria-prose h2,.aria-prose h3,.aria-prose h4 {
+  font-weight: 600; margin: 0.8em 0 0.3em; color: #fff;
+}
+.aria-prose h1 { font-size: 1.1em; }
+.aria-prose h2 { font-size: 1.0em; }
+.aria-prose h3,.aria-prose h4 { font-size: 0.9em; }
+.aria-prose strong { font-weight: 600; color: #fff; }
+.aria-prose em { font-style: italic; color: #bdc1c6; }
+.aria-prose ul,.aria-prose ol { padding-left: 1.25em; margin: 0.3em 0; }
+.aria-prose li { margin: 0.15em 0; }
+.aria-prose ul { list-style: disc; }
+.aria-prose ol { list-style: decimal; }
+.aria-prose hr { border: none; border-top: 1px solid #2d2d2d; margin: 0.8em 0; }
+.aria-prose code {
+  background: #1e1e1e; border: 1px solid #2d2d2d;
+  padding: 0.1em 0.35em; border-radius: 4px;
+  font-family: 'JetBrains Mono', 'Fira Code', monospace; font-size: 0.82em; color: #8ab4f8;
+}
+.aria-prose pre {
+  background: #111; border: 1px solid #2d2d2d; border-radius: 8px;
+  padding: 1em; overflow-x: auto; margin: 0.6em 0;
+  position: relative;
+}
+.aria-prose pre code {
+  background: none; border: none; padding: 0; color: #8ab4f8; font-size: 0.8em;
+}
+
+/* Tables */
+.aria-prose table {
+  border-collapse: collapse; width: 100%;
+  margin: 0.6em 0; font-size: 0.85em;
+}
+.aria-prose th,.aria-prose td {
+  border: 1px solid #2d2d2d; padding: 6px 12px; text-align: left;
+}
+.aria-prose th { background: #1e1e1e; font-weight: 600; color: #fff; }
+.aria-prose tr:nth-child(even) { background: #141414; }
+
+/* KaTeX display blocks */
+.aria-prose .katex-display { margin: 0.6em 0; overflow-x: auto; }
+
+/* Streaming cursor */
+.aria-cursor {
+  display: inline-block; width: 2px; height: 1em;
+  background: #8ab4f8; margin-left: 2px;
+  animation: blink 1s step-end infinite;
+  vertical-align: text-bottom;
+}
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }

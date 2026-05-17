@@ -1,0 +1,24 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//usr/local/bin/**)",
+      "Read(//Users/kc/homebrew/**)",
+      "Bash(brew list *)",
+      "Bash(npm --version)",
+      "Bash(llama-server --version)",
+      "Bash(npm create *)",
+      "Bash(mkdir -p app)",
+      "Bash(npm init *)",
+      "Bash(npm install *)",
+      "Bash(npx vite *)",
+      "Bash(npx concurrently *)",
+      "Bash(echo \"PID $!\")",
+      "Bash(node -e \"const e = require\\('/Users/kc/Gemma4InspirationSolveDROptimalSight_Disaster_Climate_MoonshotFoodWaterElectricityGen/app/node_modules/electron'\\); console.log\\(typeof e, e\\)\")",
+      "Bash(python3 -c \"import json,sys; p=json.load\\(sys.stdin\\); print\\('main:', p.get\\('main'\\)\\); print\\('exports:', list\\(p.get\\('exports',{}\\).keys\\(\\)\\)[:5]\\)\")",
+      "Bash(python3 -c \"import json,sys; p=json.load\\(sys.stdin\\); print\\('version:', p.get\\('version'\\)\\)\")",
+      "Bash(/Users/kc/Gemma4InspirationSolveDROptimalSight_Disaster_Climate_MoonshotFoodWaterElectricityGen/app/node_modules/electron/dist/Electron.app/Contents/MacOS/Electron --version)",
+      "Bash(node node_modules/electron/install.js)",
+      "Bash(node_modules/electron/dist/Electron.app/Contents/MacOS/Electron --version)"
+    ]
+  }
+}

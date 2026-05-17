@@ -1,0 +1,72 @@
+# Models — too large for git
+*.gguf
+*.bin
+*.safetensors
+models/
+*.onnx
+
+# Python
+.venv/
+venv/
+__pycache__/
+*.pyc
+*.pyo
+.Python
+*.egg-info/
+dist/
+build/
+
+# Node / Electron
+node_modules/
+frontend/dist/
+frontend/dist-electron/
+*.dmg
+*.app
+*.exe
+release/
+
+# Env / secrets
+.env
+backend/.env
+*.env.local
+
+# macOS
+.DS_Store
+**/.DS_Store
+
+# Media / large assets
+*.mp3
+*.wav
+*.pdf
+*.png
+*.jpg
+*.jpeg
+*.webp
+backend/*.png
+backend/*.jpg
+backend/*.pdf
+backend/*.mp3
+
+# Temp / uploads
+backend/uploads/
+/tmp/
+
+# Internal planning notes — not for public
+backend/DR.md
+backend/STT_RAG_multimodal.md
+backend/LiveSaliencyAction.md
+backend/gemma4_code_ideas.md
+backend/ARIA_UI.md
+backend/coherent_UI.md
+backend/ChatDisplayGemma4Synthesis.md
+backend/gemma4_MLX_VLM.md
+backend/NeedsWork.md
+backend/DR_detection_nolag.md
+backend/model_list.md
+TOMORROW.md
+
+# TTS model files downloaded at runtime
+backend/kokoro-v1.0.onnx
+backend/voices-v1.0.bin
+backend/kokoro*.onnx
+backend/voices*.bin
