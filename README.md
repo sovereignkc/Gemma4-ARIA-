@@ -146,6 +146,17 @@ Fine-tuning was done with [Unsloth](https://github.com/unslothai/unsloth) for 4-
 
 ---
 
+## Download
+
+**[Gemma ARIA v1.0.0 — Apple Silicon (arm64)](https://github.com/sovereignkc/Gemma4-ARIA-/releases/download/v1.0.0/Gemma-ARIA-v1.0.0-arm64.dmg)**
+
+> **macOS Gatekeeper notice:** The app is not notarized (no Apple Developer account). If macOS says "app is damaged", run this once in Terminal then reopen:
+> ```bash
+> xattr -cr /Applications/Gemma\ ARIA.app
+> ```
+
+---
+
 ## Running Locally
 
 ```bash

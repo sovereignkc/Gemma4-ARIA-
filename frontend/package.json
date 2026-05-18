@@ -1,7 +1,7 @@
 {
-  "name": "aether",
+  "name": "gemma-aria",
   "version": "1.0.0",
-  "description": "Aether — Humanitarian AI. Disaster response, moonshot infrastructure, offline-first.",
+  "description": "Gemma ARIA — Offline humanitarian AI. Disaster response, DR screening, moonshot infrastructure.",
   "main": "electron/main.js",
   "scripts": {
     "dev": "concurrently \"vite\" \"wait-on http://localhost:5173 && electron .\"",
@@ -28,8 +28,8 @@
     "wait-on": "^8.0.1"
   },
   "build": {
-    "appId": "org.aether.humanitarian",
-    "productName": "Aether",
+    "appId": "org.gemmaaria.humanitarian",
+    "productName": "Gemma ARIA",
     "mac": {
       "category": "public.app-category.productivity",
       "target": [
