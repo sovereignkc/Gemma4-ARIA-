@@ -123,7 +123,7 @@ ollama pull nomic-embed-text-v2-moe
 
 **DR Vision GGUF (download → place in `/models`):**
 
-**[kaggle.com/datasets/sovereignkc/gemma-4-e2b-vision-gguf-dr-screening](https://www.kaggle.com/datasets/sovereignkc/gemma-4-e2b-vision-gguf-dr-screening](https://www.kaggle.com/datasets/kevlarzanderchi/unsloth-dr-rfmid-fine-tuned-gemma4-qk4m-dataset))**
+**[kaggle.com/datasets/sovereignkc/gemma-4-e2b-vision-gguf-dr-screening](https://www.kaggle.com/datasets/kevlarzanderchi/unsloth-dr-rfmid-fine-tuned-gemma4-qk4m-dataset)**
 
 - `gemma-4-e2b-it.Q4_K_M.gguf`
 - `gemma-4-e2b-it.BF16-mmproj.gguf`
