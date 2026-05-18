@@ -111,23 +111,24 @@ All inference is local. Zero external API calls at runtime.
 
 ---
 
-## Models Required
+## Models
 
-Not included in repo (too large). Download separately:
-
+**Ollama (pull these first):**
 ```bash
-# Ollama models
+ollama pull sovereignkc/gemma4-disaster:latest
+ollama pull sovereignkc/gemma4-e4b-moonshot:latest
 ollama pull qwen3-vl:2b
 ollama pull nomic-embed-text-v2-moe
-
-# Fine-tuned models (trained with Unsloth Q4_K_M — pull or load from local)
-ollama pull gemma4-disaster:latest
-ollama pull gemma4-e4b-moonshot:latest
-
-# GGUF files — place in /models directory
-# gemma-4-e2b-it.Q4_K_M.gguf
-# gemma-4-e2b-it.BF16-mmproj.gguf
 ```
+
+**DR Vision GGUF (download → place in `/models`):**
+
+**[kaggle.com/datasets/sovereignkc/gemma-4-e2b-vision-gguf-dr-screening](https://www.kaggle.com/datasets/sovereignkc/gemma-4-e2b-vision-gguf-dr-screening)**
+
+- `gemma-4-e2b-it.Q4_K_M.gguf`
+- `gemma-4-e2b-it.BF16-mmproj.gguf`
+
+See **[RUN.md](RUN.md)** for the full step-by-step setup guide including llama-cpp-python Metal installation.
 
 ---
 
