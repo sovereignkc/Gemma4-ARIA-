@@ -82,7 +82,7 @@ FastAPI Backend  ─── port 8000
         ├── /rag/upload       PDF → PyMuPDF → chunk → Nomic embed → ChromaDB
         ├── /rag/query        query → embed → cosine top-3 → Gemma 4 context injection
         ├── /ocr              image → GLM-OCR (Ollama)
-        └── /tts              text → macOS say + ffmpeg → WAV
+        └── /tts              text → macOS say + ffmpeg → WAV (backend only, not exposed in UI)
 ```
 
 All inference is local. Zero external API calls at runtime.
@@ -106,7 +106,7 @@ All inference is local. Zero external API calls at runtime.
 | Vector store | ChromaDB | In-memory · resets on restart |
 | PDF parsing | PyMuPDF (fitz) | Text extraction, no OCR needed |
 | GPU acceleration | Apple Metal (MPS) | llama-cpp-python n_gpu_layers=-1 |
-| TTS | macOS `say` + `ffmpeg` | Native voices · zero deps |
+| TTS | macOS `say` + `ffmpeg` | Backend pipeline exists · not wired in UI |
 | Safety layer | Custom `AetherRouter` | Query mode detection + safety wrapping |
 
 ---
