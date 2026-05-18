@@ -7,6 +7,10 @@ Built for the **Gemma 4 Good Hackathon** over 3 weeks of nights and weekends on 
 
 ---
 
+## Demo
+
+[Gemma 4 ARIA Demo](https://youtu.be/W6VvD_ooZq8)
+
 ## The Problem
 
 A field medic in a flood zone. A rural doctor screening for blindness. A disaster coordinator assessing structural damage. An infrastructure engineer sizing a solar microgrid for a village that has never had reliable electricity.
