@@ -1,140 +1,201 @@
 # Gemma ARIA
 ### Adaptive Resilience Infrastructure Intelligence
 
-> **Gemma ARIA is not just an app. It's proof that offline humanitarian AI is buildable today — by one person, on consumer hardware, with open source tools.**
+> **Offline humanitarian AI — disaster response, medical screening, infrastructure analysis, and multilingual hope — running entirely on consumer hardware. No cloud. No API keys. No internet required.**
 
-Built for the **Gemma 4 Good Hackathon**. Every model runs locally. No cloud. No API keys. No internet required in the field.
+Built for the **Gemma 4 Good Hackathon** over 3 weeks of nights and weekends on a single MacBook with Apple Silicon.
+
+---
+
+## The Problem
+
+A field medic in a flood zone. A rural doctor screening for blindness. A disaster coordinator assessing structural damage. An infrastructure engineer sizing a solar microgrid for a village that has never had reliable electricity.
+
+All of them need AI. None of them have reliable internet. The cloud doesn't reach them.
+
+ARIA was built for those people.
 
 ---
 
 ## What It Does
 
-ARIA is a desktop AI assistant for humanitarian workers, field doctors, and disaster responders. Three modes, one mission:
-
 ### 🆘 Disaster Response
-Upload a photo of a flood, collapsed building, or emergency scene. ARIA analyzes it with Qwen3-VL vision, routes through a Gemma 4 E2B fine-tune trained on disaster response protocols, and delivers immediate triage guidance. Built for the reality that the person holding the phone may be the only trained responder for miles.
+
+Upload any field image — flood, collapsed structure, fire, infrastructure damage. ARIA runs a two-stage vision pipeline:
+
+1. **Qwen3-VL 2B** (Ollama) describes the scene with a system prompt locked to emergency framing — identifies hazards, structural risks, and actionable observations without hedging or breaking scenario
+2. The visual description is routed through a **Gemma 4 E2B fine-tune** trained on disaster response protocols, delivering immediate triage guidance with the most critical action first
+
+The system prompt enforces emergency context at both stages: *"You are ARIA, deployed in an active disaster zone. The user is always in a real emergency. Begin with the most critical action."*
+
+Voice input via microphone → **faster-whisper tiny** (CPU, no GPU needed) transcribes to text in real time. Click mic, speak the situation, click again, transcript appears.
 
 ### ⚡ Moonshot Infrastructure
-Ask anything about water systems, solar microgrids, bridge load capacity, soil contamination, food security. The Gemma 4 E4B Moonshot fine-tune was trained on infrastructure engineering and humanitarian logistics data. Same stack as Disaster — different training data, different domain expertise.
+
+The same architecture — Qwen3-VL vision → reasoning model — but routed through **Gemma 4 E4B fine-tuned on humanitarian infrastructure**: water systems, solar microgrids, bridge load analysis, soil contamination assessment, food security logistics.
+
+The E4B model was fine-tuned using a custom dataset pipeline in `training_data/` — chain-of-thought infrastructure reasoning generated from seed scenarios and merged into JSONL training format for Unsloth Q4_K_M fine-tuning.
 
 ### 👁️ DR Vision Screening
-Upload a retinal fundus image. ARIA runs diabetic retinopathy grading using `gemma-4-e2b-it.Q4_K_M.gguf` + `BF16-mmproj.gguf` via llama-cpp-python with full Metal GPU offload. Grades severity (None → Proliferative DR), identifies microaneurysms, hemorrhages, hard exudates, and gives a clinical recommendation. Built for clinics with no ophthalmologist within 200 miles.
+
+Diabetic retinopathy grading from retinal fundus images using **llama-cpp-python** with full Apple Metal GPU offload — not Ollama, not transformers, direct GGUF inference:
+
+- Model: `gemma-4-e2b-it.Q4_K_M.gguf` + `gemma-4-e2b-it.BF16-mmproj.gguf`
+- Chat handler: `Llava16ChatHandler` (vision-language)
+- Any image format (PNG, WEBP, TIFF, HEIC) is normalised to lossless JPEG (`quality=100, subsampling=0`) via PIL before inference — preserving microaneurysm and hard exudate detail that lossy compression destroys
+- `repeat_penalty=1.3` prevents the small model from looping on follow-up questions
+- Model loads → infers → `del llm; gc.collect()` immediately after — freeing Metal VRAM so Ollama can use it again
+
+Output: DR severity grade (None → Mild NPDR → Moderate NPDR → Severe NPDR → Proliferative DR), key findings, DME assessment, image quality, clinical recommendation.
+
+The frontend renders a severity-coloured clinical card. A purple/gold dark-mode card that looks like a real diagnostic tool — because it is one.
 
 ### ✦ Hope
-One prompt, multiple languages, simultaneously. Type a vision for better living conditions and watch it generate in English, Japanese, Filipino, Swahili — and 100+ other languages. For communities that have never seen AI speak their language.
 
----
-
-## The Stack
-
-| Component | Technology |
-|-----------|------------|
-| Desktop app | Electron + React + Vite + Tailwind CSS |
-| Backend | FastAPI (Python) |
-| Disaster fine-tune | Gemma 4 E2B · Unsloth Q4_K_M · Ollama |
-| Moonshot fine-tune | Gemma 4 E4B · Unsloth Q4_K_M · Ollama |
-| DR vision | gemma-4-e2b-it Q4_K_M + BF16-mmproj · llama-cpp-python · Metal |
-| Image vision | Qwen3-VL 2B · Ollama |
-| Speech-to-text | faster-whisper tiny · CPU |
-| Embeddings | Nomic Embed v2 MoE · Ollama |
-| GPU acceleration | Apple Metal (MPS) |
-
-**Hardware tested on:** MacBook with Apple Silicon. 16GB RAM minimum. Models total ~8GB.
-
----
-
-## Why This Matters
-
-A farmer with no internet asking about crop disease. A field medic screening for diabetic retinopathy with a phone and a fundus lens. A disaster coordinator who needs structural damage assessment in 30 seconds, not 30 minutes waiting for a satellite uplink.
-
-These people exist. They need this. The cloud doesn't reach them.
-
-We're releasing everything — code, training data pipeline, fine-tuning scripts — so anyone can adapt this for their community. Swap the training data for your domain. Swap the language. The architecture holds.
-
-**This is a blueprint, not a product.**
-
----
-
-## Models Required
-
-Download separately (not included in repo due to size):
+One English prompt. Multiple languages. Generated sequentially (Ollama is single-threaded) with strong language enforcement at both system and user turn levels:
 
 ```
-# Ollama models
-ollama pull gemma4-disaster:latest        # Gemma 4 E2B disaster fine-tune
-ollama pull gemma4-e4b-moonshot:latest    # Gemma 4 E4B infrastructure fine-tune
-ollama pull qwen3-vl:2b                   # Vision model
-ollama pull nomic-embed-text-v2-moe       # Embeddings
-ollama pull dimavz/whisper-tiny           # STT fallback
-
-# GGUF models (place in /models directory)
-gemma-4-e2b-it.Q4_K_M.gguf              # DR vision model
-gemma-4-e2b-it.BF16-mmproj.gguf         # DR vision projector
+System: "You MUST write ONLY in {language}. Do not use English unless {language} is English."
+User:   "Write this story in {language} only: {prompt}"
 ```
 
----
+Dual enforcement because fine-tuned models follow user-turn instructions more reliably than system prompts alone. Supports 100+ languages via the language selector — not hardcoded outputs, actual multilingual generation from **Gemma 4 E4B Moonshot**.
 
-## Running Locally
-
-```bash
-# Backend
-cd backend
-python -m venv .venv
-source .venv/bin/activate
-pip install -r requirements.txt
-uvicorn main:app --host 127.0.0.1 --port 8000 --reload
-
-# Frontend (separate terminal)
-cd frontend
-npm install
-npm run dev          # development
-npm run electron:dev # Electron desktop app
-```
-
-See `RUN.md` for full setup including Ollama configuration and model paths.
-
----
-
-## Training Data
-
-The `training_data/` directory contains the pipeline used to generate fine-tuning datasets:
-
-- `infra_cot_generated.jsonl` — Infrastructure chain-of-thought reasoning
-- `infra_cot_moonshot.jsonl` — Moonshot infrastructure scenarios
-- `generate_dataset.py` — Dataset generation pipeline
-- `merge_jsons.py` — Dataset merging utilities
-
-Fine-tuning was done with [Unsloth](https://github.com/unslothai/unsloth) for 4-bit quantized training on consumer hardware.
+Default demo selection: English → Japanese → Filipino → Swahili. Four panels, four scripts, one prompt, fully offline.
 
 ---
 
 ## Architecture
 
 ```
-User (Electron UI)
+Electron (React + Vite + Tailwind)
         │
         ▼
-FastAPI Backend (port 8000)
+FastAPI Backend  ─── port 8000
         │
-        ├── /multimodal  → Qwen3-VL 2B (vision) → Gemma 4 fine-tune (reasoning)
-        ├── /dr          → llama-cpp-python → gemma-4-e2b Q4_K_M + BF16-mmproj
-        ├── /chat/stream → Gemma 4 fine-tune (SSE streaming)
-        ├── /hope/stream → Gemma 4 E4B Moonshot (multilingual)
-        ├── /stt         → faster-whisper tiny
-        └── /embed       → Nomic Embed v2 MoE
+        ├── /chat/stream      SSE streaming → safety router → Gemma 4 fine-tunes
+        ├── /multimodal       image → Qwen3-VL 2B → Gemma 4 E2B/E4B fine-tune
+        ├── /dr               image → PIL normalise → llama-cpp-python GGUF → Metal
+        ├── /hope/stream      SSE streaming → Gemma 4 E4B Moonshot multilingual
+        ├── /stt              audio → faster-whisper tiny (CPU, int8)
+        ├── /embed            text → Nomic Embed Text v2 MoE (Ollama)
+        ├── /rag/upload       PDF → PyMuPDF → chunk → Nomic embed → ChromaDB
+        ├── /rag/query        query → embed → cosine top-3 → Gemma 4 context injection
+        ├── /ocr              image → GLM-OCR (Ollama)
+        └── /tts              text → macOS say + ffmpeg → WAV
 ```
 
-All inference is local. The backend never calls an external API.
+All inference is local. Zero external API calls at runtime.
+
+---
+
+## Full Stack
+
+| Layer | Technology | Notes |
+|-------|-----------|-------|
+| Desktop | Electron 28 + React 18 + Vite | macOS native, `titleBarStyle: hiddenInset` |
+| Styling | Tailwind CSS | Dark mode only, `#0a0f1a` background |
+| Backend | FastAPI + Uvicorn | SSE streaming, async throughout |
+| Disaster fine-tune | Gemma 4 E2B · Unsloth Q4_K_M | Ollama |
+| Moonshot fine-tune | Gemma 4 E4B · Unsloth Q4_K_M | Ollama |
+| DR vision model | gemma-4-e2b-it Q4_K_M + BF16-mmproj | llama-cpp-python · Metal |
+| Image vision | Qwen3-VL 2B | Ollama · 1.9GB |
+| Image normalisation | Pillow (PIL) | quality=100 subsampling=0 JPEG |
+| STT | faster-whisper tiny | CPU · int8 · MediaRecorder → WAV |
+| Embeddings | Nomic Embed Text v2 MoE | Ollama |
+| Vector store | ChromaDB | In-memory · resets on restart |
+| PDF parsing | PyMuPDF (fitz) | Text extraction, no OCR needed |
+| GPU acceleration | Apple Metal (MPS) | llama-cpp-python n_gpu_layers=-1 |
+| TTS | macOS `say` + `ffmpeg` | Native voices · zero deps |
+| Safety layer | Custom `AetherRouter` | Query mode detection + safety wrapping |
+
+---
+
+## Models Required
+
+Not included in repo (too large). Download separately:
+
+```bash
+# Ollama models
+ollama pull qwen3-vl:2b
+ollama pull nomic-embed-text-v2-moe
+
+# Fine-tuned models (trained with Unsloth Q4_K_M — pull or load from local)
+ollama pull gemma4-disaster:latest
+ollama pull gemma4-e4b-moonshot:latest
+
+# GGUF files — place in /models directory
+# gemma-4-e2b-it.Q4_K_M.gguf
+# gemma-4-e2b-it.BF16-mmproj.gguf
+```
+
+---
+
+## Training Data Pipeline
+
+The `training_data/` directory contains everything used to generate the fine-tuning datasets:
+
+- **`infra_cot_seed.jsonl`** — Hand-written seed scenarios for infrastructure chain-of-thought
+- **`infra_cot_generated.jsonl`** — Expanded dataset generated from seeds
+- **`infra_cot_moonshot.jsonl`** — Moonshot-specific infrastructure scenarios
+- **`merged_water_infrastucture_moonshot_output.json`** — Final merged training corpus
+- **`generate_dataset.py`** — Dataset generation pipeline
+- **`merge_jsons.py`** — Dataset merging and deduplication
+
+Fine-tuning was done with [Unsloth](https://github.com/unslothai/unsloth) for 4-bit quantized LoRA training on consumer hardware.
+
+---
+
+## Running Locally
+
+```bash
+# 1. Backend
+cd backend
+python -m venv .venv && source .venv/bin/activate
+pip install -r requirements.txt
+uvicorn main:app --host 127.0.0.1 --port 8000 --reload
+
+# 2. Frontend (separate terminal)
+cd frontend
+npm install
+npm run dev              # browser dev mode
+npm run electron:dev     # full Electron desktop app
+```
+
+See `RUN.md` for Ollama setup, model paths, and VRAM management notes.
+
+---
+
+## Why This Stack
+
+**Why not use the cloud?** Because the people who need this most don't have it.
+
+**Why Electron + FastAPI instead of a web app?** Local model access, file system permissions for image uploads, mic access without HTTPS, and it ships as a `.dmg` — one double-click install for a field worker who is not a developer.
+
+**Why llama-cpp-python for DR instead of Ollama?** The DR model requires GGUF + multimodal projector loading that Ollama's vision pipeline doesn't support for this specific fine-tuned weight format. llama-cpp-python gives direct control over `Llava16ChatHandler`, context window, and — critically — immediate VRAM release after inference so Ollama gets Metal back.
+
+**Why faster-whisper instead of Web Speech API?** Web Speech API requires internet for non-local engines and flickered unstably in Electron. faster-whisper tiny runs entirely on CPU at int8, handles any audio format ffmpeg touches, and is stable across recording sessions.
+
+**Why sequential generation in Hope instead of parallel?** Ollama is single-threaded — parallel requests queue and timeout. Sequential generation shows one language completing at a time, which is actually a better demo: you watch English finish, then Japanese characters stream in, then Filipino, then Swahili. The progression tells the story.
+
+---
+
+## The Bigger Frame
+
+This is a blueprint, not a product.
+
+Farmers with no internet diagnosing crop disease. Community health workers screening for TB. Engineers sizing water filtration for a village of 300. The same stack — different training data, different domain — covers all of it.
+
+We're releasing the code, the training pipeline, and the architecture so anyone can adapt this for their community. Fork it. Change the fine-tune. Deploy it somewhere the cloud doesn't reach.
 
 ---
 
 ## License
 
-Apache 2.0 — fork it, adapt it, deploy it for your community.
+Apache 2.0 — use it, modify it, deploy it.
 
-If you build something with this for a humanitarian use case, open a PR or open an issue. We want to know.
+If you build something with this for a humanitarian use case, open an issue. We want to know what you made.
 
 ---
 
-*Built in 72 hours for the Gemma 4 Good Hackathon.*
-*One person. One MacBook. Fully offline. Open source.*
+*Built over 3 weeks on Apple Silicon. One person. Fully offline. Open source.*
